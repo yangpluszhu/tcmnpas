@@ -20,5 +20,6 @@ development version from github using devtools:
 devtools::install_github("yangpluszhu/tcmnpas")
 ```
 ***
-![An image (JPG)](tcmnpasco.jpg)
-![An image (JPG)](tcmnpasCom1_E.png)
+![An image (JPG)](tcmnpaico.jpg)
+***
+![An image (png)](tcmnpasCom1_E.png)
