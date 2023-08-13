@@ -1,13 +1,12 @@
 AdjNetScore = function(TotalScore,NumSeedGene,NumScoreGene,multiple=1000){
-#ScoreGeneData$AdjTotalScore=KATZresult$TotalScore/KATZresult$NumSeedGeneID*log10(1+KATZresult$NumSeedGeneID/KATZresult$NumScoreGeneID/2)*1000
+
 Score=TotalScore/NumSeedGene*log10(1+NumSeedGene/NumScoreGene/2)*multiple
 return(Score)
 }
 
 alertCal = function(sdfFile){
-##sdfFile有id字段！
-  library(ChemmineR)
-  library(ChemmineOB)
+  require(ChemmineR)
+  require(ChemmineOB)
   unwant=read.csv('db/unwanted_structure.csv',head=T,stringsAsFactors=F)
   sdf=read.SDFset(sdfFile)
   valid <- validSDF(sdf)
@@ -40,12 +39,7 @@ asSymmetric = function(x,rule='upper'){
 }
 
 BF_analysis = function(Pdata,tS0.9=0.03,min_yao=8,threshold_leastYao=10,exact=FALSE,combineSim=FALSE,combine_method=2,combine_threshold=0.7,csvInput=T){
-  ##P--->matrix,colnames=yao,rownames=prescription$id OR csv[colname:id,herb]
-  ##S0.9筛选阈值
-  ##threshold_leastYao-->自适应筛选时BF至少含药数
-  ##exact-->自适应筛选时BF含药数是否恰好等于threshold_leastYao
-  ##Pdata-->含Pid，Vid，herb列 OR P--->matrix
-  ##output:list$BF_result:makeup+statstatistic;list$yao_fre
+  
   require(igraph)
   require(plyr)
   require(data.table)
@@ -88,13 +82,13 @@ BF_analysis = function(Pdata,tS0.9=0.03,min_yao=8,threshold_leastYao=10,exact=FA
     Degree_yao=colSums(yao_ya0_Binary)
     Degree_yao2=data.frame(drug=names(Degree_yao),Degree=Degree_yao)
     Degree_yao2=arrange(Degree_yao2,desc(Degree))
-    yao_fre=colSums(P)#####药物频率
+    yao_fre=colSums(P)#####
     names(yao_fre)=colnames(P)
     diag(yao_yao)=0
     yao_yaoNetwork=graph_from_adjacency_matrix(yao_yao,mode='undirected',weighted=T)
     rowS=rowSums(P)
     colS=colSums(P)
-    ###########筛选二值化阈值
+    ###########
     kseq=seq(0.01,0.2,by=0.005)
     num_BF=numeric(length(kseq))
     num_yaoBF=numeric(length(kseq))
@@ -133,7 +127,7 @@ BF_analysis = function(Pdata,tS0.9=0.03,min_yao=8,threshold_leastYao=10,exact=FA
           S1=sum(tem_rowS==1)/nrow(P)
           bf_stat[[i]]=c(CBWN=CBWN,S0.8=S0.8,S0.9=S0.9,S1=S1) ######bf_stat
         }
-        ###按S1阈值筛选BF
+        ###
         tS0.9=tS0.9
         for (i in names(Bf)){
           if (bf_stat[[i]]['S0.9']<tS0.9){
@@ -143,9 +137,9 @@ BF_analysis = function(Pdata,tS0.9=0.03,min_yao=8,threshold_leastYao=10,exact=FA
         }
         num_BF[k]=length(bf_name)
 		if (exact){
-		num_yaoBF[k]=sum(sapply(bf_name,length)==threshold_leastYao)###统计大于等于10个药的基本方数
+		num_yaoBF[k]=sum(sapply(bf_name,length)==threshold_leastYao)###
 		}else{
-		num_yaoBF[k]=sum(sapply(bf_name,length)>=threshold_leastYao)###统计大于等于10个药的基本方数
+		num_yaoBF[k]=sum(sapply(bf_name,length)>=threshold_leastYao)###
 		}        
       }else{
         num_BF[k]=0
@@ -197,7 +191,7 @@ BF_analysis = function(Pdata,tS0.9=0.03,min_yao=8,threshold_leastYao=10,exact=FA
           S1=sum(tem_rowS==1)/nrow(P)
           bf_stat[[i]]=c(CBWN=CBWN,S0.8=S0.8,S0.9=S0.9,S1=S1) ######bf_stat
         }
-        ###按S1阈值筛选BF
+        ###
         tS0.9=tS0.9
         for (i in names(Bf)){
           if (bf_stat[[i]]['S0.9']<tS0.9){
@@ -230,12 +224,6 @@ BF_analysis = function(Pdata,tS0.9=0.03,min_yao=8,threshold_leastYao=10,exact=FA
 }
 
 BF_analysis_shiny = function(Pdata,tS0.9=0.03,min_yao=8,threshold_leastYao=10,exact=FALSE,combineSim=FALSE,combine_method=2,combine_threshold=0.7,csvInput=T,calRs=F){
-  #method：1一起合并，2逐个合并
-  ##P--->matrix,colnames=yao,rownames=prescription$id OR csv[colname:id,herb]
-  ##S0.9筛选阈值
-  ##threshold_leastYao-->自适应筛选时BF至少含药数
-  ##exact-->自适应筛选时BF含药数是否恰好等于threshold_leastYao
-  ##Pdata-->含Pid，Vid，herb列 OR P--->matrix
   ##output:list$BF_result:makeup+statstatistic;list$yao_fre
   require(igraph)
   require(plyr)
@@ -259,8 +247,7 @@ BF_analysis_shiny = function(Pdata,tS0.9=0.03,min_yao=8,threshold_leastYao=10,ex
 }
 
 BF_eval = function(BF_result,yao){
-  #BF_result-->由BF_analysis得到，yao-->data.frame,列名包含'Pid','Vid'与药名
-  ##计算基于'patient'的统计量
+  
   require(stringr)
   require(data.table)
   require(plyr)
@@ -307,15 +294,15 @@ BF_eval = function(BF_result,yao){
 }
 
 checkmolFingerprint = function(SDFfile){
-  library("ChemmineR")
-  library(stringr)
-  library(plyr)
-  library("reshape")
+  require("ChemmineR")
+  require(stringr)
+  require(plyr)
+  require("reshape")
   #setwd('d:/R/checkmol/')
   if (!dir.exists('tempSDF')){
     dir.create('tempSDF')
   }
-  #s=read.SDFset('combine_three_final_filt_prepared.sdf')#####sdf文件名
+  #s=read.SDFset('combine_three_final_filt_prepared.sdf')#####sdf
   s=read.SDFset(SDFfile)
   #################check#########
   # index=which(validSDF(s)!=TRUE)
@@ -329,7 +316,7 @@ checkmolFingerprint = function(SDFfile){
   filename=vector(mode='character',length=length(s))
   a=NULL
   for (i in 1:length(s)){
-    tempname=datablock(s)[[i]]['id']######id标识列名作为文件名
+    tempname=datablock(s)[[i]]['id']######id
     filename[i]=paste(tempname,'.sdf',sep='')
     write.SDF(s[i], file=filename[i])
     cmd=paste('checkmol -c',filename[i],sep=' ');
@@ -340,19 +327,19 @@ checkmolFingerprint = function(SDFfile){
   melt_aa=melt(aa)
   melt_aa=melt_aa[-which(melt_aa[,'value']==''),]
   melt_aa$value=as.character(melt_aa$value)
-  check_finger=cast(melt_aa,L1~value,length)####L1列为id标识列length用于计数
+  check_finger=cast(melt_aa,L1~value,length)####
   id=str_replace_all(filename,pattern='.sdf',replacement='')
   zero_id=id[which(!id%in%check_finger$L1)]
   zero_finger=data.frame(L1=zero_id,matrix(0,nrow=length(zero_id),ncol=ncol(check_finger)-1))
   colnames(zero_finger)=colnames(check_finger)
-  check_finger_todal=rbind(check_finger,zero_finger)#L1列为id标识列length用于计数
+  check_finger_todal=rbind(check_finger,zero_finger)#
   check_finger_todal=rename(check_finger_todal,c('L1'='id'))
   setwd(odlwd)
   return(check_finger_todal)
 }
 
 checkNodeType = function(id){
-  library(stringr)
+  require(stringr)
   idTrans=as.numeric(id)
   idTrans2=str_detect(id,'c')
   geneType=rep('gene',length(id))
@@ -363,16 +350,14 @@ checkNodeType = function(id){
 }
 
 Chem2DSim = function(SMI){
-  #SMI:data.frame-->colnames(SMI)=c('id','smiles')
-  #calMolecularDes--->set padel_types.xml!
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(igraph)
-  library(ggplot2)
-  library(ChemmineR)
-  library(PaDEL)
-  library(fingerprint)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(igraph)
+  require(ggplot2)
+  require(ChemmineR)
+  require(PaDEL)
+  require(fingerprint)
   if (!dir.exists('MOL')){
     dir.create('MOL')
   }
@@ -401,14 +386,13 @@ Chem2DSim = function(SMI){
 }
 
 Chem3DSim = function(SMI){
-  #SMI:data.frame-->colnames(SMI)=c('id','smiles')
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(clipr)
-  library(igraph)
-  library(ggplot2)
-  library(ChemmineR)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(clipr)
+  require(igraph)
+  require(ggplot2)
+  require(ChemmineR)
   if (!dir.exists('MOL'))dir.create('MOL')
   SMI=as.data.table(SMI)
   SMI2=SMI[smiles!='',]
@@ -469,13 +453,9 @@ Chem3DSim = function(SMI){
 }
 
 chemScoreCal = function(chem_target,geneScore,selectGeneId,method=1,cutoffValue=0){
-  #chem_target:data.frame-->colnames(chem_target)=c('id','geneID')
-  #geneScore,selectGeneId-->由geneScoreCal得到
-  #method筛选方法：1--》使用cutoffValue；2--》按照最小100%覆盖selectGeneId
-  #cutoffValue：使用method1时的阈值,使用method2时的覆盖百分比
-  library(data.table)
-  library(plyr)
-  library(stringr)
+  require(data.table)
+  require(plyr)
+  require(stringr)
   options(stringsAsFactors = F)
   chem_target=as.data.frame(chem_target)
   chem_target$geneID=as.character(chem_target$geneID)
@@ -514,12 +494,6 @@ chemScoreCal = function(chem_target,geneScore,selectGeneId,method=1,cutoffValue=
 }
 
 ChemTargetNetScore = function(ChemData,diseaseGeneID,Methodnet='KATZ',IFcombine=F){
-  #ChemData:data.frame:colnames-->'cid','geneID'
-  #Methodnet:'KATZ' or 'RW'
-  #IFcombine:F-->split;T-->combined
-  #output:ScoreGeneData-->data.frame:
-  #(1)IFcombine=T:data.frame(SeedGeneIDPPI=0,NumSeedGeneID=0,ScoreGeneIDPPI=0,NumScoreGeneID=0,overlapScore=0,Path1Score=0,Path2Score=0,Path3Score=0,TotalScore=0,AdjTotalScore=0)
-  #(2)IFcombine=F:data.frame(cid=0,SeedGeneIDPPI=0,NumSeedGeneID=0,ScoreGeneIDPPI=0,NumScoreGeneID=0,overlapScore=0,Path1Score=0,Path2Score=0,Path3Score=0,TotalScore=0,AdjTotalScore=0)
   require(data.table)
   require(stringr)
   require(RSQLite)
@@ -608,7 +582,7 @@ ChemTargetNetScore = function(ChemData,diseaseGeneID,Methodnet='KATZ',IFcombine=
   return(ScoreGeneData)
 }
 
-combine_sim = function(g_fre_sub_cli,method=1,threshold=0.7){####g_fre_sub_cli是maxiclique得到的list对象;method：1一起合并，2逐个合并
+combine_sim = function(g_fre_sub_cli,method=1,threshold=0.7){####g_fre_sub_cli
   similarity=matrix(0,nrow=length(g_fre_sub_cli),ncol=length(g_fre_sub_cli))
   for (i in 1:length(g_fre_sub_cli)){
     for (j in 1:length(g_fre_sub_cli)){
@@ -643,7 +617,7 @@ combine_sim = function(g_fre_sub_cli,method=1,threshold=0.7){####g_fre_sub_cli�
       }
     }
     diag(similarity)=0
-    ##############合并结束输出g_fre_sub_cli_combine######################
+    ##############g_fre_sub_cli_combine######################
     maxsim=max(similarity)
   }
   combine=lapply(g_fre_sub_cli_combine,sort)
@@ -975,29 +949,12 @@ EnrichMentAnalysis = function(geneClusterID,type,qvalueCutoff=0.05,filtKEGGdisea
     BXXXT_geneID=geneClusterID[[ClusterNameToMESHenrich]]
     meshEnrich=meshes::enrichMeSH(BXXXT_geneID, MeSHDb = "MeSH.Hsa.eg.db", database=meshDatabase, category = meshcategory,pAdjustMethod='fdr',qvalueCutoff=qvalueCutoff)
     meshEnrichs=as.data.frame(meshEnrich)
-    # meshParams=new("MeSHHyperGParams",geneIds=BXXXT_geneID,universeGeneIds=universeGeneIDs,annotation="MeSH.Hsa.eg.db",category="C",database="gendoo",pvalueCutoff=pvalueCutoff,pAdjust="lFDR")
-    # BXXXT_mesh_gendoo=meshHyperGTest(meshParams)
-    # BXXXT_mesh_gendoos=summary(BXXXT_mesh_gendoo)
-    # BXXXT_mesh_gendoos=as.data.table(BXXXT_mesh_gendoos)
-    # database(meshParams)<-"gene2pubmed"
-    # BXXXT_mesh_pubMed=meshHyperGTest(meshParams)
-    # BXXXT_mesh_pubMeds=summary(BXXXT_mesh_pubMed)
-    # BXXXT_mesh_pubMeds=as.data.table(BXXXT_mesh_pubMeds)
-    # BXXXT_meshTotal=rbind(BXXXT_mesh_gendoos,BXXXT_mesh_pubMeds)
-    # BXXXT_meshTotal=unique(BXXXT_meshTotal,by='MESHID')
-    # BXXXT_meshTotal_Includ=BXXXT_meshTotal[Pvalue<pvalueCutoff,.(ID=MESHID,Description=MESHTERM,GeneRatio=OddsRatio,pvalue=Pvalue,p.adjust=lFDR,qvalue=lFDR,geneID=GENEID,Count=Count)]
-    # BXXXT_meshTotal_Includ=BXXXT_meshTotal_Includ[order(-Count)]
     meshObject<-new("enrichResult", result = meshEnrichs, qvalueCutoff = qvalueCutoff,
                     pAdjustMethod = 'fdr', organism = 'Homo sapiens',
                     ontology = 'MeSH', gene = BXXXT_geneID,
                     universe = 'extID',
                     readable = FALSE)
-    ####
-      #png('Mesh_plot.png',width=1024,height=800)
-      #Mbarplot(meshObject,drop=TRUE, colorBy='qvalue',showCategory=showCategory,font.size=18)
-      #dev.off(which = dev.cur())
-   #####
-    return(list(Enrichs=meshEnrichs,OBject=meshObject))
+   return(list(Enrichs=meshEnrichs,OBject=meshObject))
   }else if (type=='DO') {
     data(EG2DOLite)
     data(DOLiteTerm)
@@ -1023,15 +980,12 @@ EnrichMentAnalysis = function(geneClusterID,type,qvalueCutoff=0.05,filtKEGGdisea
   }
 }
 
-ExpandNet = function(geneID,method=1,cutoffValue=2){
-  #method:扩展方法：0-->核心网不进行扩展；1-->最短路径法；2-->最近邻法
-  #cutoffValue:method1时的阈值--BXXXT_Dis[BXXXT_Dis>cutoffValue]<-0
-  #ppiBinaryNet
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(igraph)
-  library("org.Hs.eg.db")
+ExpandNet = function(geneID,method=1,cutoffValue=2,ppiBinaryNet=ppiBinaryNet){
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(igraph)
+  require("org.Hs.eg.db")
   if (!exists('ppiBinaryNet')){
     load('db/ppiNetData.db')
   }
@@ -1076,9 +1030,9 @@ ExpandNet = function(geneID,method=1,cutoffValue=2){
 
 ExportChemTarNet = function(chemTar,geneListName='geneList',diseaseGeneID=NULL,diseaseName='Disease',expandMethod=c('Core','EP','EN'),cutoffValue=2,IncludeHerb=T,IncludeChem=T,IncludePPI=T,Savefilename='EpChemTarNet'){
   ##chemTar:colnames:herb,cid,chemical_name,geneID
-  library(data.table)
-  library(plyr)
-  library(igraph)
+  require(data.table)
+  require(plyr)
+  require(igraph)
   if (!dir.exists('Report')) dir.create('Report')
   chemTar=as.data.table(chemTar)
   if (!'geneName'%in%colnames(chemTar))chemTar=transform(chemTar,geneName=geneTrans(geneID,type='ID'))
@@ -1132,10 +1086,10 @@ ExportChemTarNet = function(chemTar,geneListName='geneList',diseaseGeneID=NULL,d
 
 ExportNet = function(geneID,geneIDName='geneList',diseaseGeneID,diseaseName='Disease',expandMethod=c('Core','EP','EN'),cutoffValue=2,Savefilename='EpNet'){
   #return(list(overlapGene=EXoverlapNodes,overlapGeneCount=length(EXoverlapNodes),ExGene=V(ExNet)$name,Exdisease=V(ExDiseaseNet)$name,OverlapResult=OverlapResult,NetStat=NetStat))
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(igraph)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(igraph)
   #require(NetPathMiner)
   if (sum(str_detect(geneID,',|;'))){
     geneID=as.character(unlist(str_split(geneID,',|;')))
@@ -1215,10 +1169,10 @@ ExportNet = function(geneID,geneIDName='geneList',diseaseGeneID,diseaseName='Dis
 
 ExportNetwithin = function(geneID,geneIDName='geneList',diseaseGeneID,diseaseName='Disease',expandMethod=c('Core','EP','EN'),cutoffValue=2){
   #return(list(overlapGene=EXoverlapNodes,overlapGeneCount=length(EXoverlapNodes),ExGene=V(ExNet)$name,Exdisease=V(ExDiseaseNet)$name,OverlapResult=OverlapResult,NetStat=NetStat))
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(igraph)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(igraph)
   #require(NetPathMiner)
   if (sum(str_detect(geneID,',|;'))){
     geneID=as.character(unlist(str_split(geneID,',|;')))
@@ -1371,7 +1325,7 @@ findHITTarget = function(Name,NameType){
   }
 }
 
-findMinetarget = function(Name,NameType){
+findMinetarget = function(Name,NameType,MineCTD='Mine_herb_chem_gene_smi.csv'){
   #Name
   #NameType:chemicalName(CN) or herbChineseName(HN)
   #MineCTD:'herb','chemical_name','geneID','smi'
@@ -1548,8 +1502,6 @@ findTCMSPtarget = function(Name,NameType){
 
 fortify__compareClusterResult = function(model, data, showCategory=5, by="geneRatio", includeAll=TRUE){
   clProf.df <- as.data.frame(model)
-
-  ## get top 5 (default) categories of each gene cluster.
   if (is.null(showCategory)) {
     result <- clProf.df
   } else {
@@ -1906,14 +1858,14 @@ GeneListNP = function(GeneList,GeneListName='CUSTOM',diseaseGeneID=NULL,GOMFenri
 
 geneScoreCal = function(chem_target,Pcutoff){
   #chem_target:data.frame-->colnames(chem_target)=c('id','geneID')
-  #Pcutoff:筛选的P阈值
-  library(data.table)
-  library(plyr)
-  library(stringr)
+  #Pcutoff
+  require(data.table)
+  require(plyr)
+  require(stringr)
   options(stringsAsFactors = F)
   chem_target=as.data.frame(chem_target)
   chem_target$geneID=as.character(chem_target$geneID)
-  TC_num=mean(table(chem_target$geneID))####gene被靶平均化合物数
+  TC_num=mean(table(chem_target$geneID))####gene
   #C_num=length(unique(chem_target$id))
   C_num=nrow(chem_target)
   G_C_num=table(chem_target$geneID)
@@ -2039,8 +1991,7 @@ getChemFromHerb = function(HerbList,QEDset=0.2,Database=c('HIT','TCMID','TCMSP',
 
 getChemGeneFromDatabase = function(ChemData,ChemDataType='inchikey',QEDset=0.2,geneScore=400,geneSelectPv=0.05,targetDatabase=c('HIT','TCMID','STITCH','TCMSP','CUSTOM'),TarDB='db/Tar.db'){
   #ChemData:data.frame:colnames-->'cid','chemical_name','key'.'key' is smiles or inchikey
-  #ChemDataType:'inchikey' or 'smiles'
-  #result:list(combinedGeneID=selectGeneID,GeneID_split=tempR_split,subD3=subD3):$GeneID_split-->data.frame(cid,chemical_name,inchikey,geneID).$subD3-->data.frame(cid,geneID,score,database,QED_DES,chemical_name,inchikey)
+  #ChemDataType:'inchikey' or 'smiles'  #result:list(combinedGeneID=selectGeneID,GeneID_split=tempR_split,subD3=subD3):$GeneID_split-->data.frame(cid,chemical_name,inchikey,geneID).$subD3-->data.frame(cid,geneID,score,database,QED_DES,chemical_name,inchikey)
   require(data.table)
   require(stringr)
   require(RSQLite)
@@ -2103,8 +2054,7 @@ getChemGeneTargetScore = function(ChemData,diseaseGeneID,ChemDataType='inchikey'
   #Methodnet:'KATZ' or 'RW'
   #IFcombine:F-->split;T-->combined
   #output:ScoreGeneData-->data.frame:
-  #(1)IFcombine=T:data.frame(SeedGeneIDPPI=0,NumSeedGeneID=0,ScoreGeneIDPPI=0,NumScoreGeneID=0,overlapScore=0,Path1Score=0,Path2Score=0,Path3Score=0,TotalScore=0,AdjTotalScore=0)
-  #(2)IFcombine=F:data.frame(cid=0,chemical_name=0,inchikey=0,SeedGeneIDPPI=0,NumSeedGeneID=0,ScoreGeneIDPPI=0,NumScoreGeneID=0,overlapScore=0,Path1Score=0,Path2Score=0,Path3Score=0,TotalScore=0,AdjTotalScore=0)
+  #(1)IFcombine=T:data.frame(SeedGeneIDPPI=0,NumSeedGeneID=0,ScoreGeneIDPPI=0,NumScoreGeneID=0,overlapScore=0,Path1Score=0,Path2Score=0,Path3Score=0,TotalScore=0,AdjTotalScore=0) #(2)IFcombine=F:data.frame(cid=0,chemical_name=0,inchikey=0,SeedGeneIDPPI=0,NumSeedGeneID=0,ScoreGeneIDPPI=0,NumScoreGeneID=0,overlapScore=0,Path1Score=0,Path2Score=0,Path3Score=0,TotalScore=0,AdjTotalScore=0)
   require(data.table)
   require(stringr)
   require(RSQLite)
@@ -2203,7 +2153,7 @@ getChemTargetFromStitch = function(ChemData,ChemDataType='inchikey',geneScore=40
   require(plyr)
   require(ggplot2)
   require(pracma)
-  library(readr)
+  require(readr)
   options(stringsAsFactors = F)
   ChemData$key=as.character(ChemData$key)
   ChemData$cid=as.character(ChemData$cid)
@@ -2238,11 +2188,11 @@ getChemTargetFromStitch = function(ChemData,ChemDataType='inchikey',geneScore=40
 }
 
 getCTDId_and_pubID = function(name,cookiefileS=NULL){####chemical_name--->CTDMeshID&pubID
-  library(RCurl)
-  library(stringr)
-  library(rvest)
-  library(httr)
-  library(data.table)
+  require(RCurl)
+  require(stringr)
+  require(rvest)
+  require(httr)
+  require(data.table)
   #name='DDFG'
   name=tolower(name)
   name2=str_replace_all(name,' ','%20')
@@ -2329,10 +2279,10 @@ return(list(geneNames=genes,geneID=geneID,result=result))
 
 getDiseaseGene = function(keyWords,DGdatabase=c('OMIM','TTD','DC','GeneCard'),GeneCardScore=10){
   require(data.table)
-  library(RCurl)
-  library(stringr)
-  library(XML)
-  library(readr)
+  require(RCurl)
+  require(stringr)
+  require(XML)
+  require(readr)
   require(clusterProfiler)
   GeneCardScore=as.numeric(GeneCardScore)
   if ('OMIM'%in%DGdatabase){
@@ -2407,10 +2357,10 @@ getGeneCardGeneStep1 = function(keywords){
   require(readr)
   require(rvest)
   require(stringdist)
-  #library(reticulate)
-  #library(jsonlite)
-  #library(xml2)
-  library("httr")
+  #require(reticulate)
+  #require(jsonlite)
+  #require(xml2)
+  require("httr")
   #setwd('D:/PA2.1Plus/')
   url1='https://www.malacards.org/search/results?query='
   #url2='%27&searchType=Keywords'
@@ -2442,10 +2392,10 @@ getGeneCardGeneStep2 = function(MCID){
   require(readr)
   require(rvest)
   require(stringdist)
-  #library(reticulate)
-  #library(jsonlite)
-  #library(xml2)
-  library("httr")
+  #require(reticulate)
+  #require(jsonlite)
+  #require(xml2)
+  require("httr")
   options(stringsAsFactors = F)
   Symbol_detect=function(x){
     require(stringr)
@@ -2454,7 +2404,6 @@ getGeneCardGeneStep2 = function(MCID){
     y=sum(str_detect(unlist(temp),'Symbol'),na.rm =T)
     return(y)
   }
-  #setwd('D:/PA2.1Plus/')
   MCID2=unlist(str_split(MCID,',|，|;'))
   MCID2=str_trim(MCID2,'both')
   MCID2=unique(MCID2)
@@ -2637,10 +2586,10 @@ getHerbGene = function(herbName,QEDset=0.2,geneScore=800,geneSelectPv=0.01,targe
 }
 
 getOMIMdiseaseGene = function(keyWords){
-  library(RCurl)
-  library(stringr)
-  library(XML)
-  library(readr)
+  require(RCurl)
+  require(stringr)
+  require(XML)
+  require(readr)
   require(clusterProfiler)
   keyWords=str_replace_all(keyWords,' ','+')
   url=paste('http://www.omim.org/search/?index=geneMap&search=','"',keyWords,'"','&start=1&limit=20000&format=tsv',sep='')
@@ -2685,10 +2634,10 @@ getOMIMdiseaseGene = function(keyWords){
 getPubChemSMI = function(PubChemID){
   ##PubChemID:PubChemID
   ##output:smiles
-  library(XML)
-  library(stringr)
-  library(RCurl)
-  library(ChemmineR)
+  require(XML)
+  require(stringr)
+  require(RCurl)
+  require(ChemmineR)
   URL1='https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/'
   URL2='/record/SDF/?record_type=2d&response_type=save&response_basename=Structure2D_CID_'
   URL=paste(URL1,PubChemID,URL2,PubChemID,sep='')
@@ -2700,11 +2649,11 @@ getPubChemSMI = function(PubChemID){
 }
 
 getPubID = function(name,cookiefileS=NULL){###chemical_name-->get PubmedChemID
-  library(RCurl)
-  library(stringr)
-  library(rvest)
-  library(httr)
-  library(XML)
+  require(RCurl)
+  require(stringr)
+  require(rvest)
+  require(httr)
+  require(XML)
   name=tolower(name)
   #name='protocatechualdehyde'
   if (str_detect(name,'\\s')){
@@ -2755,9 +2704,9 @@ getPubID = function(name,cookiefileS=NULL){###chemical_name-->get PubmedChemID
 }
 
 getSpiderChem = function(name,cookiefileS=NULL){####chemical_name-->get SpederID&Smiles
-  library(XML)
-  library(stringr)
-  library(RCurl)
+  require(XML)
+  require(stringr)
+  require(RCurl)
   name=tolower(name)
   #name='Methyl palmitate'
   name=str_replace_all(name,' ','%20')
@@ -2834,9 +2783,9 @@ getTTDdiseaseGene = function(keywords){
 }
 
 getZincID = function(name,cookiefileS=NULL){###chemical_name-->get ZincID
-  library(XML)
-  library(stringr)
-  library(RCurl)
+  require(XML)
+  require(stringr)
+  require(RCurl)
   name=tolower(name)
   name=str_replace_all(name,' ','%20')
   a=paste('http://zinc.docking.org/synonym/',name,sep='')
@@ -2859,9 +2808,9 @@ getZincID = function(name,cookiefileS=NULL){###chemical_name-->get ZincID
 }
 
 getZincSmiles = function(zinc_id){
-  library(XML)
-  library(stringr)
-  library(RCurl)
+  require(XML)
+  require(stringr)
+  require(RCurl)
   myheader=c('User-Agent'='Mozilla/5.0 (Windows NT 6.1; WOW64)','Accept'='text/html,application/xhyml+xml,application/xml;q=0.9,*/*;q=0.8','Accept-Language'='zh-CN,zh;q=0.8,en;q=0.6','Connection'='keep-alive','Accept-Charset'='GB2312,utf-8;q=0.7,*;q=0.7')
   name=zinc_id
   a=paste('http://zinc.docking.org/substance/',name,sep='')
@@ -2926,9 +2875,9 @@ GOsimilarity = function(genelist1,genelist2){
   return(data.frame(BP=resultBP,MF=resultMF,CC=resultCC,MeanScore=mean(c(resultBP,resultMF,resultCC),na.rm=T)))
 }
 
-KATZ = function(SeedGeneID,ScoreGeneID,randomtimes=1000,testM=1,ppiNetMatrix){
-  #SeedGeneID-->疾病靶标
-  #ScoreGeneID-->药物靶标
+KATZ = function(SeedGeneID,ScoreGeneID,randomtimes=1000,testM=1,ppiNetMatrix=ppiNetMatrix){
+  #SeedGeneID
+  #ScoreGeneID
   #testM:1-->wilcox;testM:2-->perm
   require(stringr)
   if (!exists('ppiNetMatrix')){
@@ -2972,13 +2921,6 @@ KATZ = function(SeedGeneID,ScoreGeneID,randomtimes=1000,testM=1,ppiNetMatrix){
   randomScore2=numeric()
   seedNum=1234567
   for (i in 1:randomtimes){
-    #randomGeneID=sample(colnames(ppiNetMatrix),length(SeedGeneID))
-    #overlapScore=length(intersect(randomGeneID,ScoreGeneID))
-    #N1Score=sum(ppiNetMatrix[randomGeneID,ScoreGeneID])*0.001
-    #N2Score=sum(ppiNetMatrix2[randomGeneID,ScoreGeneID])*0.000001
-    #N3Score=sum(ppiNetMatrix3[randomGeneID,ScoreGeneID])*0.000000001
-    #randomScore[i]=overlapScore+N1Score+N2Score+N3Score
-    #####
     set.seed(seedNum+i)
     randomGeneID2=sample(colnames(ppiNetMatrix),length(ScoreGeneID))
     overlapScore2=length(intersect(randomGeneID2,SeedGeneID))
@@ -3007,14 +2949,14 @@ KATZ = function(SeedGeneID,ScoreGeneID,randomtimes=1000,testM=1,ppiNetMatrix){
 
 keggSimScore = function(chem_target,keggPath){
   #chem_target:data.frame-->colnames(chem_target)=c('id','geneID')
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(clipr)
-  library(igraph)
-  library(ggplot2)
-  library(ChemmineR)
-  library(pracma)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(clipr)
+  require(igraph)
+  require(ggplot2)
+  require(ChemmineR)
+  require(pracma)
   #chem_target$geneID=as.character(chem_target$geneID)
   if (!exists('keggPath')){
     #keggPath=fread('db/KEGG_data.csv')
@@ -3077,10 +3019,10 @@ logScal = function(SDFfile){
 }
 
 makeHerb_ChemNet = function(NetworkData,NetworkType='HerbChem',INppi=T){
-  library(igraph)
-  library(rio)
-  library(data.table)
-  #library(visNetwork)
+  require(igraph)
+  require(rio)
+  require(data.table)
+  #require(visNetwork)
   ###NetworkData-->from TCMNPAS outPut[colnames:"herb","cid","chemical_name","geneID","score","inchikey", "smiles","database","QED_DES"]
   ###NetworkType:'HerbChem','ChemGene',or 'HerbChemGene'
   ###list(outputNetwork=outputNetwork,ChemCid_ChemName=ChemCid_ChemName):outputNetwork-->igraphObj;ChemCid_ChemName--dataFrame[colname->('cid','chemical_name')]
@@ -3138,10 +3080,7 @@ makeHerb_ChemNet = function(NetworkData,NetworkType='HerbChem',INppi=T){
 }
 
 Mbarplot = function(height, x="Count", colorBy='pvalue', showCategory=5, font.size=12, title="", ...){
-  ## use *height* to satisy barplot generic definition
-  ## actually here is an enrichResult object.
   object <- height
-
   colorBy <- match.arg(colorBy, c("pvalue", "p.adjust", "qvalue"))
   if (x == "geneRatio" || x == "GeneRatio") {
     x <- "GeneRatio"
@@ -3149,7 +3088,6 @@ Mbarplot = function(height, x="Count", colorBy='pvalue', showCategory=5, font.si
   else if (x == "count" || x == "Count") {
     x <- "Count"
   }
-
   Description <- Count <- NULL # to satisfy codetools
   df <- fortify_enrichResult(object, showCategory=showCategory, by=x, ...)
 
@@ -3189,14 +3127,14 @@ membershipToList = function(Members){
 MolDesCal = function(SMI){
   #SMI:data.frame-->colnames(SMI)=c('id','smiles')
   #calMolecularDes--->set padel_types.xml!
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(igraph)
-  library(ggplot2)
-  library(ChemmineR)
-  library(PaDEL)
-  library(fingerprint)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(igraph)
+  require(ggplot2)
+  require(ChemmineR)
+  require(PaDEL)
+  require(fingerprint)
   if (!dir.exists('MOL')){
     dir.create('MOL')
   }
@@ -3252,13 +3190,6 @@ Mplotting = function(clProf.reshape.df,x = ~Cluster,type = "dot",colorBy = "p.ad
   }
   p <- p + xlab("") + ylab("") + ggtitle(title) +
     theme_dose(font.size)
-  ## theme(axis.text.x = element_text(colour="black", size=font.size, vjust = 1)) +
-  ##     theme(axis.text.y = element_text(colour="black",
-  ##           size=font.size, hjust = 1)) +
-  ##               ggtitle(title)+theme_bw()
-  ## p <- p + theme(axis.text.x = element_text(angle=angle.axis.x,
-  ##                    hjust=hjust.axis.x,
-  ##                    vjust=vjust.axis.x))
   return(p)
 }
 
@@ -3332,11 +3263,11 @@ return(list(resultRW=resultRW,resultRWTable=resultRWTable,resultKATZ=resultKATZ,
 
 NetStatCal = function(NetList){
   #NetList:list-->names(list)=NetName(igraphObject)
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(igraph)
-  library("org.Hs.eg.db")
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(igraph)
+  require("org.Hs.eg.db")
   metric=c('Mean_degree','Density','Mean_betweenness','Count_nodes','Cluster_coefficient','Diameter','Shortest_path')
   #NetList=list(PPI=ppiBinaryNet,BXXXT=BXXXT_Net,Colitis=Yan_Net,Diabet=Diabet_Net,Cancer=Cancer_Net)
   statistics_matrix=matrix(0,nrow=length(metric),ncol=length(NetList))
@@ -3357,12 +3288,12 @@ NetStatCal = function(NetList){
 
 NodeOverlapAnalysis = function(NetList,Plot=TRUE){
   #NetList:list-->names(list)=NetName(igraphObject)
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(igraph)
-  library(corrplot)
-  library("org.Hs.eg.db")
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(igraph)
+  require(corrplot)
+  require("org.Hs.eg.db")
   #NetList=list(BXXXT=BXXXT_kpath_Net,Colitis=Yan_kpath_Net,Diabet=Diabet_kpath_Net,Cancer=Cancer_kpath_Net)
   overlap_DISmatrix=matrix(0,nrow=length(NetList),ncol=length(NetList))
   colnames(overlap_DISmatrix)=names(NetList)
@@ -3386,17 +3317,6 @@ NodeOverlapAnalysis = function(NetList,Plot=TRUE){
 }
 
 P_analysis = function(prescription_basic,yao,mine_data,tS0.9=0.03,min_yao=8,threshold_leastYao=10,onlyHerb=FALSE){
-  ##P_analysis(prescription_basic,yao,mine_data,TopDisease=5,TopDrug=10,tS0.9=0.03,min_yao=8,threshold_leastYao=10,onlyHerb=FALSE,Drug_pair_analysis=FALSE,local=TRUE)
-  ##prescription_basic-->"id","time", "patient","diagnosis", "doctor","","drug"[binary]
-  ##mine_data--->"num","drug_id","mine_id","mine_Cname", "drug_commonName", "mine_name" ,"class","fufang", "jixing","guige""生产企业"         "规格", "jixing2" , "innComponentName","type"合并了<--herb_data
-  ##yao-->drug向量包含西药及成药，由basic_trans输出得到
-  ##TopDisease-->统计前几位的疾病
-  ##TopDrug--->统计关联度最强的前几位的药物
-  ##min_yao-->基本方发现时需要指定的最小含药数
-  ##threshold_leastYao-->自适应优化二值化阈值时采用的预期含药数
-  ##herb_name-->由herb_data得到unique(herb_data$mine_name+herb_data$innComponentName)
-  ##z_name-->表示成药向量
-  ##x_name-->表示西药向量
   require(plyr)
   require(igraph)
   require(data.table)
@@ -3418,7 +3338,7 @@ P_analysis = function(prescription_basic,yao,mine_data,tS0.9=0.03,min_yao=8,thre
     # }
     #####
     BF_result=BF_analysis(P,tS0.9=tS0.9,min_yao=min_yao,threshold_leastYao=threshold_leastYao)
-    BF=BF_result$BF_result####BF基本方信息
+    BF=BF_result$BF_result####BF
     }else{
     P=subset(prescription_basic,select=yao)
     P=as.matrix(P)
@@ -3431,21 +3351,16 @@ P_analysis = function(prescription_basic,yao,mine_data,tS0.9=0.03,min_yao=8,thre
     # }
     #####
     BF_result=BF_analysis(P,tS0.9=tS0.9,min_yao=min_yao,threshold_leastYao=threshold_leastYao)
-    BF=BF_result$BF_result####BF基本方信息
+    BF=BF_result$BF_result####BF
 
-  }
-  ###########################################
-
-  #############################################
-  #############################################
-  #return(list(BF=BF,herb_fre=herb_fre,opt_a=BF_result$opt_a,Degree_yao=BF_result$Degree_yao,Drug_pair_result=Drug_pair_result,noherb_fre=noherb_fre,disease_fre=disease_fre,P_stat=P_stat,disease_yao=disease_yao))
+  }  #return(list(BF=BF,herb_fre=herb_fre,opt_a=BF_result$opt_a,Degree_yao=BF_result$Degree_yao,Drug_pair_result=Drug_pair_result,noherb_fre=noherb_fre,disease_fre=disease_fre,P_stat=P_stat,disease_yao=disease_yao))
   return(list(BF=BF,opt_a=BF_result$opt_a,Degree_yao=BF_result$Degree_yao))
 }
 
 PathWayScore = function(geneID1,geneID1Name='Name1',geneID2,geneID2Name='Name2',method=c('WNS','keggSim')){
-  library(data.table)
-  library(plyr)
-  library(stringr)
+  require(data.table)
+  require(plyr)
+  require(stringr)
   ################################
   if (str_detect(geneID1,',|;| ')){
     geneID1=unlist(str_split(geneID1,',|;| '))
@@ -3492,9 +3407,9 @@ pdftotxt = function(pdffile){
 }
 
 plotCommonItems = function(DataFrame,Ca,Cb,TopNIDCurve=30,pointSize=2,legendTextSize=8,axisTitleSize=8,axisTextSize=6,plotName='Commonplot.png',plotWidth=10,plotHeight=8,xLab='Top N enriched-Item',yLab='Percentage of common enriched-Items'){
-library(ggplot2)
-library(pracma)
-library(data.table)
+require(ggplot2)
+require(pracma)
+require(data.table)
 options(stringsAsFactors = F)
 tempD=DataFrame
 tempD$Cluster=as.character(tempD$Cluster)
@@ -3528,8 +3443,8 @@ return(list(PlotObject=PlotCommon,AUC=Commonauc))
 
 QEDcal = function(druglikeDesData){
   #colnames(druglikeDesData)=c('id',colnames(QED_par))
-  library(ChemmineR)
-  library(ChemmineOB)
+  require(ChemmineR)
+  require(ChemmineOB)
   require(data.table)
   require(plyr)
   para=fread('db/QED_par.csv')
@@ -3562,14 +3477,12 @@ QEDcal = function(druglikeDesData){
 }
 
 QEDcalALL = function(druglikeDesFile,sdfFile){
-  library(ChemmineR)
-  library(ChemmineOB)
+  require(ChemmineR)
+  require(ChemmineOB)
   require(data.table)
   require(plyr)
   require(rio)
   options(stringsAsFactors = F)
-#druglikeDesFile直接由DS计算得到的csv，colnames(druglikeDesFile)=c('id',colnames(QED_par)[1:7]);##sdfFile是DS计算的文件有id字段！
-  #druglikeData=read.csv(druglikeDesFile,head=T,stringsAsFactors=F,colClasses=c('character',rep('numeric',7)))
   druglikeData=fread(druglikeDesFile)
   druglikeData=as.data.frame(druglikeData)
   RenamesChar=c(ALogP='ALOGP',Molecular_Mass='MW',Num_RotatableBonds='ROTB',Num_AromaticRings='AROM',Num_H_Acceptors_Lipinski='HBA',Num_H_Donors_Lipinski='HBD',Molecular_PolarSurfaceArea='PSA')
@@ -3613,7 +3526,7 @@ randomWalk = function(igraphM,queryGenes,EdgeWeight = FALSE, gamma = 0.7){
 }
 
 read_pdf = function(pdffile,sep=FALSE){
-  library(stringr)
+  require(stringr)
   output=str_replace(pdffile,'\\.pdf','.txt')
   dos=paste('pdftotext',pdffile,'-enc UTF-8')
   shell(dos)
@@ -3996,10 +3909,6 @@ ReportTCMNP = function(CustomherbTargetDat=NULL,herbList,herbListName='TCM',QEDs
 }
 
 RWanalysis = function(SeedGeneID,ScoreGeneID,scoreStand=1000,randomtimes=1000,EdgeWeight=FALSE,gamma=0.7,TopNCal=FALSE,TopN=1:10,Plot=FALSE,testM=1,ppiBinaryNet=ppiBinaryNet){
-  #SeedGeneID-->seedGeneID
-  #ScoreGeneID-->待评估的geneID
-  #scoreStand-->score的扩大倍数
-  #TopNCal-->是否要计算前N个gene，使用此项功能前ScoreGeneID必须按重要性降序排列
   #ppiBinaryNet
   #testM:1-->wilcox;testM:2-->perm
   require(data.table)
@@ -4103,7 +4012,7 @@ RWanalysis = function(SeedGeneID,ScoreGeneID,scoreStand=1000,randomtimes=1000,Ed
   return(list(SeedGeneID=SeedGeneID,NumSeedGeneIDPPI=length(SeedGeneID),ScoreGeneID=ScoreGeneID,NumScoreGeneIDPPI=length(ScoreGeneID),GeneScore=GeneScore,TopNauc=TopNNauc,TotalScore=TotalScore,Pvalue=Pvalue,RandomScoreMedian=paste(mean(tempRandomScore),' [',quantile(tempRandomScore,0.025),',',quantile(tempRandomScore,0.975),']',sep='')))
 }
 
-selectFun = function(protein){
+selectFun = function(protein,up=up){
   require(UniProt.ws)
   if (!exists('up')){
     load('db/UniProtwsOB.RData')
@@ -4142,14 +4051,14 @@ SmiToSDF = function(SMI,type='C'){
   #SMI='SMI.csv'-->colnames=c('id','smiles') or SMItext-->Named character vector
   #type='F'-->file for SMI or 'C'-->character for SMItext
   #outPut:'Molelular.sdf'
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(clipr)
-  library(igraph)
-  library(readr)
-  library(ggplot2)
-  library(ChemmineR)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(clipr)
+  require(igraph)
+  require(readr)
+  require(ggplot2)
+  require(ChemmineR)
   if (type=='F'){
     SMI1=fread(SMI)
     SMI2=SMI1[smiles!='',]
@@ -4493,7 +4402,7 @@ TCMNP = function(CustomherbTargetDat=NULL,herbList,herbListName='TCM',QEDset=0.2
     ###############
     
     #####################################
-  }else{###非自定义输入靶标
+  }else{###
     #########################################################################################################
     if (!exists('AllHerbListData')){
       #ALL=fread('db/AllHerbListData.csv')
@@ -4510,7 +4419,7 @@ TCMNP = function(CustomherbTargetDat=NULL,herbList,herbListName='TCM',QEDset=0.2
       herbIDOrder=paste("herbID IN ",paID3,sep='')
       OrderherbID=paste("SELECT * FROM STITCH_HIT_TCMID_TCMSP_Tar where",herbIDOrder,sep=' ')
       tmp <- dbConnect(SQLite(), TarDB)
-      #tmp <- dbConnect(SQLite(), 'program/library/base/R/Tar.db')
+      #tmp <- dbConnect(SQLite(), 'program/require/base/R/Tar.db')
       res <- dbSendQuery(tmp, OrderherbID)
       subD0 <- fetch(res, n =-1)
       dbDisconnect(tmp)
@@ -4739,7 +4648,7 @@ TCMNP = function(CustomherbTargetDat=NULL,herbList,herbListName='TCM',QEDset=0.2
 }
 
 tempcatch = function(x){
-  library(stringr)
+  require(stringr)
   if (class(try(x$a$.attrs['href'],silent=T))=='try-error'){
     temp=x$a['href']
   }else{
@@ -4857,16 +4766,16 @@ toVnaNet = function(net,filename='net.vna',NodeAtr=F,NodeData){
 
 TransInchikey = function(molecularFile,molecularType='SMI'){
   #molecularType='SMI':#molecularFile:SMI.csv-->colnames(molecularFile)=c('id','smiles')
-  #molecularType='SDF':#molecularFile:sdf-->datablocktag(sdf,'id')含id列
+  #molecularType='SDF':#molecularFile:sdf-->datablocktag(sdf,'id')
   #molecularType='SMItxt':SMI character text
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(clipr)
-  library(igraph)
-  library(readr)
-  library(ggplot2)
-  library(ChemmineR)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(clipr)
+  require(igraph)
+  require(readr)
+  require(ggplot2)
+  require(ChemmineR)
   if (molecularType=='SMI'){
     SMI=fread(molecularFile)
     SMI2=SMI[smiles!='',]
@@ -4945,13 +4854,13 @@ return(as.data.frame(inchikey,stringsAsFactors = FALSE))
 }
 
 TransMol = function(sdfFile){
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(igraph)
-  library(ggplot2)
-  library(ChemmineR)
-  library(PaDEL)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(igraph)
+  require(ggplot2)
+  require(ChemmineR)
+  require(PaDEL)
   SDF=read.SDFset(sdfFile)
   Nmol=length(SDF)
   CID=datablocktag(SDF,'id')
@@ -4965,12 +4874,6 @@ TransMol = function(sdfFile){
 }
 
 upDateDataTargetFromStitch = function(dataSource='db/HITDatabase_herb_Chem_TargetALL.csv',STITCH_CTdb='db/STITCH5_CTdb.db',STITCH_CKEYdb='db/STITCH5_CKEYdb.db',outputfile=NULL){
-  #dataSource:HITDatabase_herb_Chem_TargetALL.csv,TCMIDDatabase_herb_Chem_TargetALL.csv,TCMSPDatabase_herb_Chem_TargetALL.csv【colnames:"herb","cid","chemical_name","geneID","QED_DES","inchikey","smiles","database","score"】
-  #chem_inchikey:inchikey
-  #STITCH_CTdb:'STITCH5_CTdb.db',colnames=c('cid','ENSP','score','geneID','inchikey')
-  #STITCH_CKEYdb:'STITCH_CKEYdb.db',colnames=c('inchikey','source_cid','stereo_chemical_id','flat_chemical_id')
-  #StitchSearchout：data.frame(cid,ENSP,geneID,score,inchikey)
-  #result:outputfile同STITCH_HIT_TCMID_TCMSP_Tar.csv【colnames:"herb","chemical_name","geneID","score","inchikey","smiles","database","QED_DES","cid"】
   require(RSQLite)
   require(stringr)
   require(data.table)
@@ -5035,9 +4938,6 @@ UpdateHerbName = function(TargetFile='db/STITCH_HIT_TCMID_TCMSP_Tar.csv',HerbNam
   require(lubridate)
   require(stringr)
   options(stringsAsFactors = F)
-  #HerbNameData-->colnames('oldName','newName');newName中标0的进行删除操作！
-  #TargetFile-->由UpDateTargetData得到，需要进一步规整药名herb列
-  #outFile-->新的STITCH_HIT_TCMID_TCMSP_Tar.db-->D:\PA2.1Plus\program\library\base\R\Tar.db；###新的AllHerbListData-->within(pa.db)##新的STITCH_HIT_TCMID_TCMSP_Tar.csv-->For updata later in the future
   HerbName=fread(HerbNameData,encoding = 'UTF-8')
   HerbName=HerbName[!is.na(HerbName$newName),]
   HerbName=HerbName[HerbName$newName!='',]
@@ -5079,7 +4979,7 @@ UpdateHerbName = function(TargetFile='db/STITCH_HIT_TCMID_TCMSP_Tar.csv',HerbNam
   ALL4=ALL4[,ColNameALL3,with=F]
   write.csv(ALL4,paste(UpTime,'STITCH_HIT_TCMID_TCMSP_Tar_db.csv',sep='_'),row.names = F)
   ########
-  tmp <- dbConnect(SQLite(), paste(UpTime,'STITCH_HIT_TCMID_TCMSP_Tar.db',sep='_'))##STITCH_HIT_TCMID_TCMSP_Tar.db-->D:\PA2.1Plus\program\library\base\R\Tar.db
+  tmp <- dbConnect(SQLite(), paste(UpTime,'STITCH_HIT_TCMID_TCMSP_Tar.db',sep='_'))##STITCH_HIT_TCMID_TCMSP_Tar.db-->D:\PA2.1Plus\program\require\base\R\Tar.db
   dbWriteTable(tmp,'STITCH_HIT_TCMID_TCMSP_Tar',ALL4,append=T)
   dbSendQuery(tmp,'create index index_herbID on STITCH_HIT_TCMID_TCMSP_Tar (herbID)')
   dbDisconnect(tmp)
@@ -5089,10 +4989,10 @@ updateKEGGdb = function(OLDKEGG_data='E:/DATABASE/MYpro/BanXiaXieXin/result/Tool
   ##KEGG_data.db-->KEGG_data.csv[colnames:PathwayID,geneID,Annotatiion]
   ##OLDKEGG_data='E:/DATABASE/MYpro/BanXiaXieXin/result/ToolBox/db/KEGG_data.csv'
   ##KEGG_data.csv-->KEGG_data.db
-  library(KEGGgraph)
-  library(KEGGREST)
-  library(stringr)
-  library(data.table)
+  require(KEGGgraph)
+  require(KEGGREST)
+  require(stringr)
+  require(data.table)
   options(stringsAsFactors = F)
   OldKEGG_data=fread(OLDKEGG_data)
   res <- keggList("pathway", "hsa")
@@ -5120,10 +5020,10 @@ updateKEGGdb = function(OLDKEGG_data='E:/DATABASE/MYpro/BanXiaXieXin/result/Tool
 }
 
 updateKEGGsqlite = function(hsa00001json='E:/DATABASE/MYpro/BanXiaXieXin/result/ToolBox/db/KEGG.db/hsa00001_190502.json',KEGGsqlite="E:/DATABASE/MYpro/BanXiaXieXin/result/ToolBox/db/KEGG.db/KEGG.sqlite"){
-  library("RSQLite")
-  library(data.table)
-  library(jsonlite)
-  library(stringr)
+  require("RSQLite")
+  require(data.table)
+  require(jsonlite)
+  require(stringr)
   ##KEGG.sqlite-->KEGG.db/extdata/KEGG.sqlite
   ##hsa00001json-->https://www.genome.jp/kegg-bin/get_htext?hsa00001+3101
   ##output:list(PathGeneData,PathGeneDataSub,KEGG_data):PathGeneDataSub:dataFrame(pathway2gene-->KEGG.sqlite)。PathGeneData:dataFrame(HSApathdata,colnames:pathway_id,gene_or_orf_id)。KEGG_data-->KEGG_data.csv用于updatePathSimM2
@@ -5184,11 +5084,11 @@ updateKEGGsqlite = function(hsa00001json='E:/DATABASE/MYpro/BanXiaXieXin/result/
 }
 
 updatePPiNet = function(HIPPIEfiletxt='E:/DATABASE/HIPPIE-PPI database-Human Integrated Protein-Protein Interaction rEference/hippie_current_v2.2.txt'){
-##ppiNetData.db-->包含ppiNet,ppiBinaryNet
+##ppiNetData.db-->ppiNet,ppiBinaryNet
   ##output-->ppiNetData.Rdata-->ppiNetData.db
-  library(data.table)
-  library(igraph)
-  library(stringr)
+  require(data.table)
+  require(igraph)
+  require(stringr)
   #ppi_data=fread('E://DATABASE//HIPPIE-PPI database-Human Integrated Protein-Protein Interaction rEference//hippie_current.txt')
   #HIPPIEfiletxt='E:/DATABASE/HIPPIE-PPI database-Human Integrated Protein-Protein Interaction rEference/hippie_current_v2.2.txt'
   ppi_data=fread(HIPPIEfiletxt)
@@ -5210,11 +5110,11 @@ updatePPIpath = function(ppiNetdata='ppiNetData.Rdata'){
   ##PPIpath.db-->ppiBinaryNet,ppiNet,ppiNetMatrix,ppiNetMatrix2,ppiNetMatrix3
   ##PPIpath.Rdata-->PPIpath.db
   ##ppiNetdata='2019-03-25_10_38_18_ppiNetData.Rdata'
-  library(linkcomm)
-  library(ggplot2)
-  library(expm)
-  library(igraph)
-  library(stringr)
+  require(linkcomm)
+  require(ggplot2)
+  require(expm)
+  require(igraph)
+  require(stringr)
   load(ppiNetdata)
   ppiNetMatrix=as_adjacency_matrix(ppiBinaryNet)
   ppiNetMatrix=as.matrix(ppiNetMatrix)
@@ -5235,9 +5135,6 @@ UpDateTargetData = function(oldTarData='db/STITCH_HIT_TCMID_TCMSP_Tar.csv',newTa
   require(plyr)
   require(lubridate)
   require(stringr)
-  #oldTarData:"herb","chemical_name","geneID","score","inchikey","smiles","database","QED_DES","cid"
-  ##herbID与cid将重新编号！
-  ##Outfile:STITCH_HIT_TCMID_TCMSP_Tar.db-->D:\PA2.1Plus\program\library\base\R\Tar.db；###AllHerbListData-->within(pa.db)##STITCH_HIT_TCMID_TCMSP_Tar.csv-->For updata later in the future
   oldD=fread(oldTarData)
   if (is.null(newTarData)){
     newD=data.table()
@@ -5278,7 +5175,7 @@ UpDateTargetData = function(oldTarData='db/STITCH_HIT_TCMID_TCMSP_Tar.csv',newTa
   ALL4=ALL4[,ColNameALL3,with=F]
   write.csv(ALL4,paste(UpTime,'STITCH_HIT_TCMID_TCMSP_Tar_db.csv',sep='_'),row.names = F)
   ########
-  tmp <- dbConnect(SQLite(), paste(UpTime,'STITCH_HIT_TCMID_TCMSP_Tar.db',sep='_'))##STITCH_HIT_TCMID_TCMSP_Tar.db-->D:\PA2.1Plus\program\library\base\R\Tar.db
+  tmp <- dbConnect(SQLite(), paste(UpTime,'STITCH_HIT_TCMID_TCMSP_Tar.db',sep='_'))##STITCH_HIT_TCMID_TCMSP_Tar.db-->D:\PA2.1Plus\program\require\base\R\Tar.db
   dbWriteTable(tmp,'STITCH_HIT_TCMID_TCMSP_Tar',ALL4,append=T)
   dbSendQuery(tmp,'create index index_herbID on STITCH_HIT_TCMID_TCMSP_Tar (herbID)')
   dbSendQuery(tmp,'create index index_inchikey on STITCH_HIT_TCMID_TCMSP_Tar (inchikey)')
@@ -5333,14 +5230,14 @@ WNS = function(pathID1,cid1Genetemp,pathID2,cid2Genetemp,keggList,WWIDis,ppiDis)
 
 WNSscore = function(chem_target,ppiBinaryNet=ppiBinaryNet,pathSimM2=pathSimM2,keggPath=keggPath){
   #chem_target:data.frame-->colnames(chem_target)=c('id','geneID')
-  library(data.table)
-  library(plyr)
-  library(stringr)
-  library(clipr)
-  library(igraph)
-  library(ggplot2)
-  library(ChemmineR)
-  library(pracma)
+  require(data.table)
+  require(plyr)
+  require(stringr)
+  require(clipr)
+  require(igraph)
+  require(ggplot2)
+  require(ChemmineR)
+  require(pracma)
   chem_target$geneID=as.character(chem_target$geneID)
   chem_target=as.data.table(chem_target)
   if (!exists('ppiBinaryNet')){
