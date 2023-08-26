@@ -1,3 +1,11 @@
+##' SDF to MOL2
+##' note:obabel must be installed
+##' @title SDFtoMOL2
+##' @param molFile molecular file *.sdf
+##' @param molName molecular file name
+##' @return a mol2 file
+##' @export
+##' @author Yang Ming
 SDFtoMOL2 = function(molFile,molName='mole.mol2'){ 
   library(stringr) 
   ##molFile:SDFfileName 

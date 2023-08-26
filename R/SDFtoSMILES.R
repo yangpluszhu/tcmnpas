@@ -1,3 +1,12 @@
+##' SDF to SMILES
+##' note:obabel must be installed
+##' @title SDFtoSMILES
+##' @param SDFfile molecular file *.sdf
+##' @param outtype 'txt' or 'file'
+##' @param outName a csv file with transformed SMILES character
+##' @return a character vector or a dataframe
+##' @export
+##' @author Yang Ming
 SDFtoSMILES = function(SDFfile,outtype='txt',outName='smiles.csv'){ 
   require(ChemmineR) 
   sdfdata=read.SDFset(SDFfile) 

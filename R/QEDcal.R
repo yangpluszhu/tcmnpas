@@ -1,10 +1,17 @@
-QEDcal = function(druglikeDesData){ 
+##' QED of chemical calculation
+##' @title QEDcal
+##' @param druglikeDesData a dataframe with colname: c('id',colnames(QED_par))
+##' @param QED_par QED calculation parameter from reference: a dataframe with colname(MW,ALOGP,HBA,HBD,PSA,ROTB,AROM,ALERTS
+##' @return a dataframe
+##' @export
+##' @author Yang Ming
+QEDcal = function(druglikeDesData,QED_par='db/QED_par.csv'){ 
   #colnames(druglikeDesData)=c('id',colnames(QED_par)) 
   require(ChemmineR) 
   require(ChemmineOB) 
   require(data.table) 
   require(plyr) 
-  para=fread('db/QED_par.csv') 
+  para=fread(QED_par) 
   para=as.data.frame(para) 
 #druglike=read.csv(druglikeDesFile,head=T,stringsAsFactors=F,colClasses=c('character',rep('numeric',8))) 
   druglike=druglikeDesData 

@@ -1,3 +1,11 @@
+##' SMILES to SDF
+##' note:obabel must be installed
+##' @title SmiToSDF
+##' @param SMI SMILES
+##' @param type type='F'-->file for SMI or 'C'-->character for SMItext
+##' @return a sdf file
+##' @export
+##' @author Yang Ming
 SmiToSDF = function(SMI,type='C'){ 
   #SMI='SMI.csv'-->colnames=c('id','smiles') or SMItext-->Named character vector 
   #type='F'-->file for SMI or 'C'-->character for SMItext 

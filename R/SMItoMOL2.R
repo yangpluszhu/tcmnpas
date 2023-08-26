@@ -1,3 +1,11 @@
+##' SMILES to MOL2
+##' note:obabel must be installed
+##' @title SMItoMOL2
+##' @param moltxt SMILES
+##' @param molName output file name
+##' @return a mol2 file
+##' @export
+##' @author Yang Ming
 SMItoMOL2 = function(moltxt,molName='mole.mol2'){ 
   library(stringr) 
   library(rcdk) 

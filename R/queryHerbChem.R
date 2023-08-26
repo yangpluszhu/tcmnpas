@@ -1,3 +1,12 @@
+##' query Herb Chemical from database
+##' @title queryHerbChem
+##' @param herbList a character vector
+##' @param Qinchikey inchikey of chemical for query
+##' @param database a character vector:'HIT','TCMSP','TCMID'
+##' @param HerbChemDB a prepared herb-chemical database file
+##' @return a dataframe
+##' @export
+##' @author Yang Ming
 queryHerbChem = function(herbList=NULL,Qinchikey=NULL,database=c('HIT','TCMSP','TCMID'),HerbChemDB='../npa/db/herb_ChemDataAll.db'){ 
   require(stringr) 
   require(RSQLite) 
