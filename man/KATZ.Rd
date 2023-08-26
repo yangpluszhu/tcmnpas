@@ -2,7 +2,7 @@
 % Please edit documentation in R/KATZ.R
 \name{KATZ}
 \alias{KATZ}
-\title{KATZ}
+\title{DisAccess}
 \usage{
 KATZ(
   SeedGeneID,
@@ -27,7 +27,7 @@ KATZ(
 a list Object
 }
 \description{
-Network based relevance inference by KATZ score
+Network based relevance inference by network distance
 }
 \author{
 Yang Ming
