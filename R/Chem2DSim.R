@@ -1,3 +1,10 @@
+##' Calculate Compound 2D Similarity
+##'
+##' @title Chem2DSim
+##' @param SMI molecular file: a dataframe with smiles
+##' @return a list object
+##' @export
+##' @author Yang Ming
 Chem2DSim = function(SMI){ 
   require(data.table) 
   require(plyr) 

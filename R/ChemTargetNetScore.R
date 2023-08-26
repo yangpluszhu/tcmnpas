@@ -1,3 +1,12 @@
+##' Calculate Compound Target Score based on Network based relevance score
+##' @title ChemTargetNetScore 
+##' @param ChemData a data.frame with colnames=c('cid','geneID') 
+##' @param diseaseGeneID a character vector 
+##' @param Methodnet 'KATZ', 'RW' or 'DIS'   
+##' @param IFcombine whether to combine the score
+##' @return a list Object 
+##' @export 
+##' @author Yang Ming 
 ChemTargetNetScore = function(ChemData,diseaseGeneID,Methodnet='KATZ',IFcombine=F){ 
   require(data.table) 
   require(stringr) 

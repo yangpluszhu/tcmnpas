@@ -1,3 +1,11 @@
+##' Combine igraph Object
+##'
+##' @title combineIgraphOB
+##' @param g1 a igraph Object
+##' @param g2 a igraph Object
+##' @return a igraph object
+##' @export
+##' @author Yang Ming
 combineIgraphOB = function(g1,g2){ 
   require(igraph) 
   Node1_attr=vertex_attr_names(g1) 
