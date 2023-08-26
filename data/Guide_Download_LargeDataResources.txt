@@ -4,4 +4,5 @@ TCMNPAS package large file resources:
 3.PPIpath.db --> PPI path database prepared based on HIPPIE
 4.Tar.db --> Herb-Compound-Target database prepared based on TCM resources (TCMSP,HIT,TCMID) and compound-target resource (STITCH)
 5.STITCH5_CTdb.db --> Prepared compound-target database based on STITCH
-the above large file resources are available at https://pan.baidu.com/s/1o0FEiWLKeLT3340vWMJpXA?pwd=3voo 
+The above large file resources are available at https://pan.baidu.com/s/1o0FEiWLKeLT3340vWMJpXA?pwd=3voo.
+Download all data files and copy them to the 'data' folder within the installed package directory.
