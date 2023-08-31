@@ -8,7 +8,7 @@
 
 -----
 ***
-Please cite the following article when using `tcmnpas`:
+Please cite when using `tcmnpas`:
 *LongHua Hospital Shanghai University of Traditional Chinese Medicine,YangMing. TCM Network Pharmacology Analysis System v1.0[CP/CD],Copyright Registration No.,2019SR1127090.
 
 
