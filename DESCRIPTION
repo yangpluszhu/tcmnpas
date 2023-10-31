@@ -4,7 +4,7 @@ Title: A comprehensive analysis platform for exploring traditional
 Version: 1.0
 Authors@R: 
     person("Yang", "Ming", , "yangpluszhu@sina.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0001-8246-4797"))
+           comment = c(ORCID = "0000-0001-8246-4797 or 0000-0002-4445-1546"))
 Description: The TCM Network formulaology and Pharmacology Analysis System (TCMNPAS), registered with the National Copyright Administration of China under the registration number 2019SR1127090. TCMNPAS incorporates multiple resources and offers a range of functions designed for automated analysis implementation, including prescription mining, molecular docking, network pharmacology analysis, and visualization. The online version of TCMNPASv1.0 system offers 8 functional modules for users.
 License: `use_gpl3_license()`
 Encoding: UTF-8
@@ -12,5 +12,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 NeedsCompilation: no
 Packaged: 2023-08-26 11:13:58 UTC; Administrator
-Author: Yang Ming [aut, cre] (<https://orcid.org/0000-0001-8246-4797>)
+Author: Yang Ming [aut, cre] (<https://orcid.org/0000-0001-8246-4797> or <https://orcid.org/0000-0002-4445-1546>)
 Maintainer: Yang Ming <yangpluszhu@sina.com>
