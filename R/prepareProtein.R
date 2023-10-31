@@ -6,6 +6,10 @@
 ##' @param pdbtype Receptor type: id pdb or pdbqt 
 ##' @param preparedProfile prepared file name for output: *.pdbqt
 ##' @param python2PTAH python2.exe PTAH 
+##' @param getLigand whether to extract ligands from the protein
+##' @param RefLigandFile If getLigand is True. RefLigandFile is the file name for output
+##' @param IFProLigandPrepared whether to Prepare ligand
+##' @param repair whether to repair Receptor by "-A hydrogens"   
 ##' @param prepare_receptor4PATH "prepare_receptor4.py" PTAH. The default Vina receptor protein preparation program (addh–>true for adding hydrogen; nphs–>true for merging charges and removing non-polar hydrogen; lps–>true for merging charges and removing lone pairs; waters–>true for removing water molecules; nonstdres–>true for removing chains composed of less than 20 standard amino acid residues) is used.
 ##' @return a prepared receptor file
 ##' @export 
