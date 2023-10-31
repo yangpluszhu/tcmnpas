@@ -1,4 +1,16 @@
-prepareProtein = function(pdbFile,pdbtype='id',preparedProfile='outPro.pdbqt',python2PTAH='c:/Progra~2/MGLTools-1.5.6rc3/python2',prepare_receptor4PATH='E:/ADtools',getLigand=T,RefLigandFile='Ligand',IFProLigandPrepared=T,repair=T){ 
+##' PrepareReceptor for Molecular Docking. 
+##' Note: vina, PSOvina,and mgltools must be installed and configured correctly. 
+##' 
+##' @title prepareProtein 
+##' @param pdbFile Receptor file
+##' @param pdbtype Receptor type: id pdb or pdbqt 
+##' @param preparedProfile prepared file name for output: *.pdbqt
+##' @param python2PTAH python2.exe PTAH 
+##' @param prepare_receptor4PATH "prepare_receptor4.py" PTAH. The default Vina receptor protein preparation program (addh–>true for adding hydrogen; nphs–>true for merging charges and removing non-polar hydrogen; lps–>true for merging charges and removing lone pairs; waters–>true for removing water molecules; nonstdres–>true for removing chains composed of less than 20 standard amino acid residues) is used.
+##' @return a prepared receptor file
+##' @export 
+##' @author Yang Ming 
+prepareProtein = function(pdbFile,pdbtype='id',preparedProfile='outPro.pdbqt',python2PTAH='c:/Progra~2/MGLTools-1.5.6rc3/python2',prepare_receptor4PATH=system.file('tools',package='tcmnpas'),getLigand=T,RefLigandFile='Ligand',IFProLigandPrepared=T,repair=T){ 
   require(bio3d) 
   ##pdbtype:id-->fromWeb,pdb,pdbqt 
   ### 
