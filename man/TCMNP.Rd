@@ -9,6 +9,8 @@ TCMNP(
   herbList,
   herbListName = "TCM",
   QEDset = 0.2,
+  Lipinski_Viosset=0,
+  Veber_Viosset=0,
   geneScore = 400,
   targetDatabase = c("HIT", "TCMID", "STITCH", "TCMSP", "CUSTOM"),
   diseaseGeneID = NULL,
@@ -22,9 +24,7 @@ TCMNP(
   MESHenrich = T,
   meshcategory = "C",
   qvalueCutoff = 0.05,
-  TopNIDCurve = 10,
-  AllHerbListData = AllHerbListData,
-  TarDB = "db/Tar.db"
+  TopNIDCurve = 10
 )
 }
 \arguments{
@@ -35,6 +35,10 @@ TCMNP(
 \item{herbListName}{character}
 
 \item{QEDset}{QED threshold}
+
+\item{Lipinski_Viosset}{Lipinski-Rules screening}
+
+\item{Veber_Viosset}{Veber-Rules screening}
 
 \item{geneScore}{gene Score threshold}
 
